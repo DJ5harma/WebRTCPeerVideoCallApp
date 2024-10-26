@@ -117,11 +117,9 @@
 		<track kind="captions" />
 	</video>
 	<div>
-		<!-- <button >Allow to send your video</button> -->
 		<button class="bg-green-700" onclick={startCall}>Start Call</button>
 		<a href="/">
 			<button> Go Home </button>
 		</a>
-		<button class="bg-green-700" onclick={addTracksToPeerConnection}>Allow my video</button>
 	</div>
 </section>
