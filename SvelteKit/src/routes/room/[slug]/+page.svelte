@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { iceServers, myName, peerName, room, socket } from '../../../states.svelte.js';
+	import { iceServers, myName, peerName, room, socket, user } from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import Draggable from '../../../components/Draggable.svelte';
 
 	export let data;
 
 	onMount(() => {
+		toast.push('Tip: you can drag videos');
 		$room = data.slug;
-		$myName = `User${(Math.random() * 10000).toFixed()}`;
+		$myName = $user.username;
 		socket.emit('join-room', { name: $myName, room: $room });
 
 		socket.on('new-joiner', (name) => {

@@ -42,12 +42,14 @@
 			>Register</button
 		>
 	</div>
-	<input
-		on:change={(e) => (formData.username = e.currentTarget.value)}
-		type="text"
-		placeholder="username"
-		value={formData.username}
-	/>
+	{#if formType === 'Register'}
+		<input
+			on:change={(e) => (formData.username = e.currentTarget.value)}
+			type="text"
+			placeholder="username"
+			value={formData.username}
+		/>
+	{/if}
 	<input
 		on:change={(e) => (formData.email = e.currentTarget.value)}
 		type="email"
