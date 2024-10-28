@@ -1,9 +1,10 @@
 I made this app to learn about WebRTC.
-It is a barebones implementation as it was only a way for me to learn.
+It is right now a barebones implementation (until I complete it) as it was only a way for me to learn.
 
-# You can:
+# Currently in this app, you can:
 
 - Go to a specific room with a username and connect with your friend in a p2p Video call.
+- Drag and resize your and your friend's live-video.
 
 # Concept behind WebRTC as I currently understand:
 
