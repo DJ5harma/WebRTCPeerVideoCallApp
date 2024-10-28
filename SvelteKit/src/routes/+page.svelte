@@ -1,22 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { myName, room, socket } from '../states.svelte';
 	import { goto } from '$app/navigation';
-
-	const MY_NAME = `User${(Math.random() * 10000).toFixed()}`;
+	import { user } from '../states.svelte';
 	let ROOM = $state('1234');
-	onMount(() => {
-		$myName = MY_NAME;
-		return () => {
-			socket.removeAllListeners();
-		};
-	});
 </script>
 
 <section>
 	<div class="">
-		<p>Name :</p>
-		<input bind:value={$myName} />
+		<p>Name : {$user.username}</p>
 	</div>
 	<div>
 		<p>Room :</p>

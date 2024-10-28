@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { iceServers, myName, peerName, room, socket } from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
+	import Draggable from '../../../components/Draggable.svelte';
 
 	export let data;
 
@@ -32,24 +33,22 @@
 	let localStream: MediaStream;
 	let localVideoElement: HTMLVideoElement;
 
-	let remoteStream: MediaStream | null = null;
 	let remoteVideoElement: HTMLVideoElement;
 
 	let pc: RTCPeerConnection | null = null;
 
-	async function startMyVideo() {
-		const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-		console.log({ stream });
-		localStream = stream;
-		localVideoElement.srcObject = stream;
-		addTracksToPeerConnection();
-	}
 	async function createPeerConnection() {
 		if (pc) {
 			console.log('PC Already there --createPeerConnection');
 			return;
 		}
 		pc = new RTCPeerConnection({ iceServers });
+	}
+	async function startMyVideo() {
+		const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+		console.log({ stream });
+		localStream = stream;
+		localVideoElement.srcObject = stream;
 	}
 	function addTracksToPeerConnection() {
 		localStream.getTracks().forEach((track) => {
@@ -65,7 +64,7 @@
 	}
 
 	onMount(() => {
-		createPeerConnection().then(() => startMyVideo());
+		createPeerConnection().then(startMyVideo).then(addTracksToPeerConnection);
 		// startMyVideo();
 		if (!pc) return;
 		// listen to remote stream
@@ -78,6 +77,12 @@
 			console.log('ice candidate inocoming from stun......');
 
 			socket.emit('my-ice-candidate', { iceCandidate: ev.candidate, room: $room });
+		};
+		pc.onconnectionstatechange = () => {
+			const st = (pc && pc?.connectionState) || 'new';
+			toast.pop();
+			toast.push(st);
+			// if (st === 'disconnected') ;
 		};
 
 		socket.on('incoming-offerD', async (offerD) => {
@@ -99,9 +104,9 @@
 		});
 		return () => {
 			socket.removeAllListeners();
+			pc?.close();
 		};
 	});
-	// let allowMyVideo = false;
 </script>
 
 <section>
@@ -110,12 +115,59 @@
 		<h1>Room {$room}</h1>
 		<p class="text-2xl">{($peerName || 'Nobody') + ' is here'}</p>
 	</div>
-	<video src="" bind:this={localVideoElement} class="border-2 border-white" playsinline autoplay>
-		<track kind="captions" />
-	</video>
-	<video src="" bind:this={remoteVideoElement} class="border-2 border-white" playsinline autoplay>
-		<track kind="captions" />
-	</video>
+
+	<Draggable
+		x={0}
+		y={(() => {
+			try {
+				return innerHeight - 300;
+			} catch (error) {
+				return 0;
+			}
+		})()}
+	>
+		<div class="flex">
+			<p class="absolute left-1 bottom-1">You_</p>
+			<video
+				src=""
+				bind:this={localVideoElement}
+				class="border-2 border-white"
+				playsinline
+				autoplay
+			>
+				<track kind="captions" />
+			</video>
+		</div>
+	</Draggable>
+	<Draggable
+		x={(() => {
+			try {
+				return innerWidth - 300;
+			} catch (error) {
+				return 0;
+			}
+		})()}
+		y={(() => {
+			try {
+				return innerHeight - 300;
+			} catch (error) {
+				return 0;
+			}
+		})()}
+	>
+		<div class="flex">
+			<p class="absolute left-1 bottom-1">Them_</p>
+			<video
+				src=""
+				bind:this={remoteVideoElement}
+				class="border-2 border-white"
+				playsinline
+				autoplay
+			>
+				<track kind="captions" />
+			</video>
+		</div>
+	</Draggable>
 	<div>
 		<button class="bg-green-700" onclick={startCall}>Start Call</button>
 		<a href="/">

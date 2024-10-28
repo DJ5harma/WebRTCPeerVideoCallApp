@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import type { CUser } from '$lib/types';
 import { io } from 'socket.io-client';
 import { writable } from 'svelte/store';
 
@@ -10,23 +11,9 @@ export const iceServers = [
 ];
 export const socket = $state(io(SOCKET_URL));
 
+export const user = writable<CUser>();
 export const myName = writable('');
 export const peerName = writable('');
 export const room = writable('');
 
-let PeerConnection: RTCPeerConnection | null = null;
-export const pc = {
-	createPeerConnection: () => {
-		if (PeerConnection) {
-			console.log('PC Already there');
-			return;
-		}
-		PeerConnection = new RTCPeerConnection({ iceServers });
-	},
-	addTrack: (track: MediaStreamTrack, localStream: MediaStream) => {
-		PeerConnection?.addTrack(track, localStream);
-	}
-	// add local streams to PC
-	// listen remote streams and add to PC
-	// listen for ice candidate
-};
+export const videoStarted = writable(false);
