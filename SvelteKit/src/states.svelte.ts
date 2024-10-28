@@ -12,8 +12,16 @@ export const iceServers = [
 export const socket = $state(io(SOCKET_URL));
 
 export const user = writable<CUser>();
-export const myName = writable('');
 export const peerName = writable('');
 export const room = writable('');
 
 export const videoStarted = writable(false);
+
+export const myCamDimensions = writable({
+	width: 300,
+	height: 230
+});
+export const peerCamDimensions = writable({
+	width: 300,
+	height: 230
+});

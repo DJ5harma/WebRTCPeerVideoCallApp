@@ -35,40 +35,40 @@
 <section>
 	<h1>Form</h1>
 	<div>
-		<button on:click={() => (formType = 'Login')} class={formType === 'Login' ? 'selected' : ''}
+		<button onclick={() => (formType = 'Login')} class={formType === 'Login' ? 'selected' : ''}
 			>Login</button
 		>
-		<button on:click={() => (formType = 'Register')} class={formType !== 'Login' ? 'selected' : ''}
+		<button onclick={() => (formType = 'Register')} class={formType !== 'Login' ? 'selected' : ''}
 			>Register</button
 		>
 	</div>
 	{#if formType === 'Register'}
 		<input
-			on:change={(e) => (formData.username = e.currentTarget.value)}
+			onchange={(e) => (formData.username = e.currentTarget.value)}
 			type="text"
 			placeholder="username"
 			value={formData.username}
 		/>
 	{/if}
 	<input
-		on:change={(e) => (formData.email = e.currentTarget.value)}
+		onchange={(e) => (formData.email = e.currentTarget.value)}
 		type="email"
 		placeholder="email"
 		value={formData.email}
 	/>
 	<input
-		on:change={(e) => (formData.password = e.currentTarget.value)}
+		onchange={(e) => (formData.password = e.currentTarget.value)}
 		type="password"
 		placeholder="password (min: 6)"
 		value={formData.password}
 	/>
 	{#if formType === 'Register'}
 		<input
-			on:change={(e) => (confirmedPassword = e.currentTarget.value)}
+			onchange={(e) => (confirmedPassword = e.currentTarget.value)}
 			type="password"
 			placeholder="confirm-password"
 			value={confirmedPassword}
 		/>
 	{/if}
-	<button on:click={handleSubmit} style="background-color: black; color:white;">{formType}</button>
+	<button onclick={handleSubmit} style="background-color: black; color:white;">{formType}</button>
 </section>

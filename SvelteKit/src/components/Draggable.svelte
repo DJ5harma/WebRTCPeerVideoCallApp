@@ -1,40 +1,31 @@
 <!-- ngl, I asked a chatbot for help  -->
 <script lang="ts">
-	import { CAM_VIDEO } from '$lib/hardcoded';
 	import { onMount } from 'svelte';
 
 	let props = $props();
 
-	let width = CAM_VIDEO.width; // Initial width
-	let height = CAM_VIDEO.height;
 	let x = $state(0);
 	let y = $state(0);
 	let isDragging = false;
 	let offsetX = 0;
 	let offsetY = 0;
-
-	function handleMouseDown(event: unknown) {
-		isDragging = true;
-
-		offsetX = (event as MouseEvent).clientX - x;
-		offsetY = (event as MouseEvent).clientY - y;
-	}
-
-	function handleMouseMove(event: MouseEvent) {
-		if (isDragging) {
-			x = event.clientX - offsetX;
-			y = event.clientY - offsetY;
-		}
-	}
-
-	function handleMouseUp() {
-		isDragging = false;
-	}
+	let elementWidth = 0;
+	let elementHeight = 0;
+	let draggableElement: Element;
 
 	onMount(() => {
-		if (props.loc === 'bottom-left') x = 10;
-		else if (props.loc === 'bottom-right') x = window.innerWidth - width - 10;
-		y = window.innerHeight - height - 10; // Small margin from the bottom edge
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (let entry of entries) {
+				elementWidth = entry.contentRect.width;
+				elementHeight = entry.contentRect.height;
+			}
+		});
+		if (props.loc === 'bottom-right') {
+			y = innerHeight - 230;
+			x = innerWidth - 300;
+		} else if (props.loc === 'bottom-left') y = innerHeight - 230;
+
+		resizeObserver.observe(draggableElement);
 
 		document.addEventListener('mousemove', handleMouseMove);
 		document.addEventListener('mouseup', handleMouseUp);
@@ -42,11 +33,34 @@
 		return () => {
 			document.removeEventListener('mousemove', handleMouseMove);
 			document.removeEventListener('mouseup', handleMouseUp);
+			resizeObserver.disconnect(); // Clean up observer on unmount
 		};
 	});
+
+	function handleMouseDown(event: MouseEvent) {
+		isDragging = true;
+
+		offsetX = event.clientX - x;
+		offsetY = event.clientY - y;
+	}
+
+	function handleMouseMove(event: MouseEvent) {
+		if (isDragging) {
+			let newX = event.clientX - offsetX;
+			let newY = event.clientY - offsetY;
+
+			x = Math.max(0, Math.min(newX, window.innerWidth - elementWidth));
+			y = Math.max(0, Math.min(newY, window.innerHeight - elementHeight));
+		}
+	}
+
+	function handleMouseUp() {
+		isDragging = false;
+	}
 </script>
 
 <div
+	bind:this={draggableElement}
 	class="draggable"
 	role="button"
 	tabindex="0"

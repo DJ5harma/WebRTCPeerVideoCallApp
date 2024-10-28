@@ -6,7 +6,7 @@
 	border-radius: 10px;
 }
 body {
-	background-color: rgb(40, 40, 40);
+	background-color: black;
 	color: white;
 	display: flex;
 	justify-content: center;
@@ -20,7 +20,7 @@ input {
 section,
 div {
 	display: flex;
-	gap: 25px;
+	gap: 10px;
 	justify-content: center;
 	align-items: center;
 }
