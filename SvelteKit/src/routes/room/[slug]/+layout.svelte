@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { iceServers, peerName, room, socket, user } from '../../../states.svelte.js';
+	import { peerName, room, socket, user } from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import Draggable from '../../../components/Draggable.svelte';
+	import { PC_CONFIG } from '$lib/hardcoded.js';
 
 	let insideCall = $state(false);
 	onMount(() => {
@@ -32,7 +33,7 @@
 
 	let pc: RTCPeerConnection | null = null;
 
-	const createPeerConnection = async () => !pc && (pc = new RTCPeerConnection({ iceServers }));
+	const createPeerConnection = async () => !pc && (pc = new RTCPeerConnection(PC_CONFIG));
 
 	const startMyVideo = async () =>
 		navigator.mediaDevices
@@ -94,6 +95,7 @@
 			socket.removeAllListeners();
 			pc?.close();
 			insideCall = false;
+			toast.push('Left the room with ' + $peerName);
 		};
 	});
 

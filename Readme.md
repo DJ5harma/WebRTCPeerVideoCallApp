@@ -7,7 +7,7 @@ It is a barebones implementation as it was only a way for me to learn.
 
 # Concept behind WebRTC as I currently understand:
 
-## In summary, we're directly connecting two client machines by exchanging their Public IP addresses to save bandwidth, power and time that would have been there due to an intermediary server.
+### In summary, we're directly connecting two client machines by exchanging their Public IP addresses to save bandwidth, power and time that would have been there due to an intermediary server.
 
 - Usually, a connection between two clients is made by involving a WebSocket server or HTTP long polling server in between.
 
@@ -44,6 +44,12 @@ It is a barebones implementation as it was only a way for me to learn.
 - This feels snappier because it is a direct (peer-to-peer) connection without a server inbetween and also, it saves server's bandwidth and power because it isn't used at all after exchanging their info.
 
 I've tried to explain this as if a layman could understand. Please read again slowly if it feels too much at a time.
+
+## One thing to note: WebRTC uses UDP protocol (rather than TCP/IP)
+
+- In terms of speed : UDP >>> TCP/IP (felt especially for large data)
+- But to achieve that speed, it compromises on data quality by being lossy (whereas TCP/IP is very Robust).
+- For things like a live-video-call, it isn't usually very necessary to get all the pixels for all the frames completely... we just need an acceptable and quick response and that's where WebRTC can be used.
 
 # To run locally and play around:
 

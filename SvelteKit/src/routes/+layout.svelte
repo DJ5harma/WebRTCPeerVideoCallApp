@@ -5,4 +5,5 @@
 </script>
 
 <SvelteToast />
+<div class="absolute"></div>
 {@render children()}
