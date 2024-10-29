@@ -67,4 +67,4 @@ I've tried to explain this as if a layman could understand. Please read again sl
 
 - The SvelteKit directory-path terminal will give you a URL looking similar to : "http://localhost:5173", just open that in any browser (open it in 2 tabs of the same browser to test p2p (as your camera should not be used by other processes)).
 
-- Just go to the same room from both tabs/browsers after signing up and enjoy!!!
+- Just go to the same room from both tabs (of the same browser preferably for camera access) after signing up and enjoy!!!
