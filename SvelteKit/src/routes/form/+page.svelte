@@ -3,13 +3,13 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	import { user } from '../../states.svelte';
 
-	let formType: 'Register' | 'Login' = 'Login';
-	let formData = {
+	let formType: 'Register' | 'Login' = $state('Login');
+	let formData = $state({
 		username: '',
 		password: '',
 		email: ''
-	};
-	let confirmedPassword = '';
+	});
+	let confirmedPassword = $state('');
 	async function handleSubmit() {
 		if (formType === 'Register' && confirmedPassword != formData.password)
 			return toast.push('Passwords mismatch');
@@ -32,43 +32,29 @@
 	}
 </script>
 
-<section>
-	<h1>Form</h1>
-	<div>
-		<button onclick={() => (formType = 'Login')} class={formType === 'Login' ? 'selected' : ''}
-			>Login</button
-		>
-		<button onclick={() => (formType = 'Register')} class={formType !== 'Login' ? 'selected' : ''}
-			>Register</button
-		>
-	</div>
+<section class="gap-4">
+	<h1 class="text-2xl">Form</h1>
 	{#if formType === 'Register'}
-		<input
-			onchange={(e) => (formData.username = e.currentTarget.value)}
-			type="text"
-			placeholder="username"
-			value={formData.username}
-		/>
+		<input bind:value={formData.username} placeholder="Username" />
 	{/if}
+	<input bind:value={formData.email} type="email" placeholder="Email" class="p-4" />
 	<input
-		onchange={(e) => (formData.email = e.currentTarget.value)}
-		type="email"
-		placeholder="email"
-		value={formData.email}
-	/>
-	<input
-		onchange={(e) => (formData.password = e.currentTarget.value)}
+		bind:value={formData.password}
 		type="password"
-		placeholder="password (min: 6)"
-		value={formData.password}
+		placeholder="Password (min: 6)"
+		class="p-4"
 	/>
 	{#if formType === 'Register'}
-		<input
-			onchange={(e) => (confirmedPassword = e.currentTarget.value)}
-			type="password"
-			placeholder="confirm-password"
-			value={confirmedPassword}
-		/>
+		<input bind:value={confirmedPassword} type="password" placeholder="Confirm Password" />
 	{/if}
-	<button onclick={handleSubmit} style="background-color: black; color:white;">{formType}</button>
+	<button onclick={handleSubmit}>{formType}</button>
+
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<p
+		onclick={() => (formType = formType === 'Login' ? 'Register' : 'Login')}
+		class="cursor-pointer"
+	>
+		Or click here to {formType === 'Login' ? 'Register' : 'Login'}!
+	</p>
 </section>

@@ -23,7 +23,7 @@
 
 <div id="NavMain" class={show ? 'slideIn' : 'slideOut'}>
 	<a href="/">Home</a>
-	<a href="/form"> Account</a>
+	<a href="/form">Change Account</a>
 </div>
 
 <style>
