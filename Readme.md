@@ -5,6 +5,7 @@ It is right now a barebones implementation (until I complete it) as it was only 
 
 - Go to a specific room with a username and connect with your friend in a p2p Video call.
 - Drag and resize your and your friend's live-video.
+- Chat with your peer in a side-panel which you can hide with a button.
 
 (I felt like explaining the whole theory (what I know atleast) down below cause.... why not?)
 
