@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import '../app.css';
-	import Nav from './Nav.svelte';
 	import { user } from '../states.svelte';
+	import NavMenu from './NavMenu.svelte';
 	let { children } = $props();
 </script>
 
-<SvelteToast />
+<SvelteToast options={{ duration: 3000 }} />
 {#if $user}
-	<Nav />
+	<NavMenu />
 {/if}
 <div class="absolute"></div>
 {@render children()}

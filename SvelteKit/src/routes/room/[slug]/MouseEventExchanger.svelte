@@ -1,79 +1,64 @@
-<script lang="ts">
-	import { toast } from '@zerodevx/svelte-toast';
+<!-- <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let { dataChannel }: { dataChannel: RTCDataChannel } = $props();
+	let { dataChannel, pc }: { dataChannel: RTCDataChannel; pc: RTCPeerConnection } = $props();
 
-	const sendHello = () => {
-		if (dataChannel && dataChannel.readyState === 'open') {
-			dataChannel.send('Hello from the other side!');
-			toast.push('Sent: Hello from the other side!');
-		} else {
-			toast.push('Data channel is not open');
-		}
-	};
+	// const mouseMoveHandler = (event: MouseEvent) => {
+	// 	dataChannel.send(
+	// 		JSON.stringify({
+	// 			type: 'mousemove',
+	// 			x: event.clientX,
+	// 			y: event.clientY
+	// 		})
+	// 	);
+	// };
+
+	// const mouseDownHandler = (event: MouseEvent) => {
+	// 	dataChannel.send(
+	// 		JSON.stringify({
+	// 			type: 'mousedown',
+	// 			button: event.button,
+	// 			x: event.clientX,
+	// 			y: event.clientY
+	// 		})
+	// 	);
+	// };
+
+	// const mouseUpHandler = (event: MouseEvent) => {
+	// 	dataChannel.send(
+	// 		JSON.stringify({
+	// 			type: 'mouseup',
+	// 			button: event.button,
+	// 			x: event.clientX,
+	// 			y: event.clientY
+	// 		})
+	// 	);
+	// };
+
+	// const addMouseListeners = () => {
+	// 	document.addEventListener('mousemove', mouseMoveHandler);
+	// 	document.addEventListener('mousedown', mouseDownHandler);
+	// 	document.addEventListener('mouseup', mouseUpHandler);
+	// };
+	// const removeMouseListeners = () => {
+	// 	document.removeEventListener('mousemove', mouseMoveHandler);
+	// 	document.removeEventListener('mousedown', mouseDownHandler);
+	// 	document.removeEventListener('mouseup', mouseUpHandler);
+	// };
+
 	onMount(() => {
 		console.log({ dataChannel });
-		dataChannel.onopen = () => {
-			console.log('Data channel is open');
-			toast.push('Data channel open, ready to send messages');
+
+		pc.ondatachannel = (event) => {
+			const receiveChannel = event.channel;
+			receiveChannel.onmessage = (event) => {
+				console.log('Message received:', event.data);
+			};
 		};
-
-		dataChannel.onmessage = (event) => {
-			console.log('Received message:', event.data);
-			toast.push('Message from peer: ' + event.data);
-		};
-
-		// dataChannel.onerror = (error) => {
-		// 	console.log('Data Channel Error:', error);
+		// addMouseListeners();
+		// return () => {
+		// 	removeMouseListeners();
+		// 	dataChannel.close();
 		// };
-
-		// dataChannel.onmessage = (event) => {
-		// 	console.log('Got Data Channel Message:', event.data);
-		// };
-
-		// dataChannel.onopen = () => {
-		// 	dataChannel.send('Hello World!');
-		// };
-
-		// dataChannel.onclose = () => {
-		// 	console.log('The Data Channel is Closed');
-		// };
-
-		// document.addEventListener('mousemove', (e) => {
-		// 	console.log(
-		// 		JSON.stringify({
-		// 			type: 'mousemove',
-		// 			x: e.clientX,
-		// 			y: e.clientY
-		// 		})
-		// 	);
-		// });
-
-		// document.addEventListener('mousedown', (e) => {
-		// 	console.log(
-		// 		JSON.stringify({
-		// 			type: 'mousedown',
-		// 			button: e.button,
-		// 			x: e.clientX,
-		// 			y: e.clientY
-		// 		})
-		// 	);
-		// });
-
-		// document.addEventListener('mouseup', (e) => {
-		// 	console.log(
-		// 		JSON.stringify({
-		// 			type: 'mouseup',
-		// 			button: e.button,
-		// 			x: e.clientX,
-		// 			y: e.clientY
-		// 		})
-		// 	);
-		// });
 	});
-</script>
-
-<div class="absolute bottom-20 left-5 z-50">
-	<button class="bg-blue-500 p-2 rounded text-white" onclick={sendHello}>Send Hello</button>
-</div>
+</script> -->

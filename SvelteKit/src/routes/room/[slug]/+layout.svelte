@@ -4,8 +4,9 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	import { PC_CONFIG } from '$lib/hardcoded.js';
 	import type { OUser } from '$lib/types.js';
-	import Draggable from './Draggable.svelte';
 	import MouseEventExchanger from './MouseEventExchanger.svelte';
+	import DragContainer from './DragContainer.svelte';
+	import ChatBox from './ChatBox.svelte';
 
 	let localStream: MediaStream;
 	let localVideoElement: HTMLVideoElement;
@@ -13,10 +14,10 @@
 
 	let dataChannel = $state<RTCDataChannel>();
 
-	let pc: RTCPeerConnection;
+	let pc = $state<RTCPeerConnection>();
 
 	onMount(() => {
-		toast.push('Please wait while we connect/reconnect you two!');
+		toast.push('Please wait while we connect you two...');
 		socket.emit('join-room', { USER: $user, room: $room });
 		socket.on('new-joiner', (USER: OUser) => {
 			if ($peer) return window.location.reload(); // if new joiner comes but we have an existing one, that means that the peer has refreshed tje page
@@ -64,14 +65,6 @@
 		createPeerConnection().then(startMyVideo);
 		if (!pc) return;
 
-		pc.ondatachannel = (event) => {
-			const receiveChannel = event.channel;
-			receiveChannel.onmessage = (event) => {
-				console.log('Message received:', event.data);
-				toast.push('Message received: ' + event.data);
-			};
-		};
-
 		pc.ontrack = (ev) => remoteVideoElement && (remoteVideoElement.srcObject = ev.streams[0]);
 
 		pc.onicecandidate = (ev) =>
@@ -116,7 +109,11 @@
 	let peerCamWidth = $state(250);
 </script>
 
-<Draggable loc="bottom-left">
+{#if dataChannel && pc}
+	<!-- <MouseEventExchanger {dataChannel} {pc} /> -->
+	<ChatBox {dataChannel} {pc} />
+{/if}
+<DragContainer loc="bottom-left">
 	<div class="flex border-2">
 		<p class="absolute left-2 bottom-2">You</p>
 		<video
@@ -129,8 +126,8 @@
 			<track kind="captions" />
 		</video>
 	</div>
-</Draggable>
-<Draggable loc="bottom-right">
+</DragContainer>
+<DragContainer loc="bottom-right">
 	<div class="flex border-2">
 		{#if $peer}
 			<p class="absolute left-2 bottom-2">
@@ -147,11 +144,7 @@
 			<track kind="captions" />
 		</video>
 	</div>
-</Draggable>
-
-{#if dataChannel}
-	<MouseEventExchanger {dataChannel} />
-{/if}
+</DragContainer>
 
 <section class="overflow-hidden">
 	<div>
