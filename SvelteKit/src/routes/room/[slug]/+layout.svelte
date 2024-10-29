@@ -3,14 +3,17 @@
 	import { insideCall, peer, room, socket, user } from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { PC_CONFIG } from '$lib/hardcoded.js';
-	import Draggable from '../../../components/Draggable.svelte';
 	import type { OUser } from '$lib/types.js';
+	import Draggable from './Draggable.svelte';
+	import MouseEventExchanger from './MouseEventExchanger.svelte';
 
 	let localStream: MediaStream;
 	let localVideoElement: HTMLVideoElement;
 	let remoteVideoElement = $state<HTMLVideoElement>();
 
-	let pc: RTCPeerConnection | null = null;
+	let dataChannel = $state<RTCDataChannel>();
+
+	let pc: RTCPeerConnection;
 
 	onMount(() => {
 		toast.push('Please wait while we connect/reconnect you two!');
@@ -29,7 +32,11 @@
 	$effect(() => {
 		if (!$peer) insideCall.set(false);
 	});
-	const createPeerConnection = async () => !pc && (pc = new RTCPeerConnection(PC_CONFIG));
+
+	const createPeerConnection = async () => {
+		!pc && (pc = new RTCPeerConnection(PC_CONFIG));
+		dataChannel = pc.createDataChannel('messageChannel');
+	};
 
 	const startMyVideo = async () => {
 		try {
@@ -56,6 +63,14 @@
 	onMount(() => {
 		createPeerConnection().then(startMyVideo);
 		if (!pc) return;
+
+		pc.ondatachannel = (event) => {
+			const receiveChannel = event.channel;
+			receiveChannel.onmessage = (event) => {
+				console.log('Message received:', event.data);
+				toast.push('Message received: ' + event.data);
+			};
+		};
 
 		pc.ontrack = (ev) => remoteVideoElement && (remoteVideoElement.srcObject = ev.streams[0]);
 
@@ -101,6 +116,43 @@
 	let peerCamWidth = $state(250);
 </script>
 
+<Draggable loc="bottom-left">
+	<div class="flex border-2">
+		<p class="absolute left-2 bottom-2">You</p>
+		<video
+			src=""
+			bind:this={localVideoElement}
+			playsinline
+			autoplay
+			style={`width: ${myCamWidth}px;`}
+		>
+			<track kind="captions" />
+		</video>
+	</div>
+</Draggable>
+<Draggable loc="bottom-right">
+	<div class="flex border-2">
+		{#if $peer}
+			<p class="absolute left-2 bottom-2">
+				{$insideCall ? $peer.username : "Call hasn't been started yet"}
+			</p>
+		{/if}
+		<video
+			src=""
+			bind:this={remoteVideoElement}
+			playsinline
+			autoplay
+			style={`width: ${peerCamWidth}px;`}
+		>
+			<track kind="captions" />
+		</video>
+	</div>
+</Draggable>
+
+{#if dataChannel}
+	<MouseEventExchanger {dataChannel} />
+{/if}
+
 <section class="overflow-hidden">
 	<div>
 		{@render children()}
@@ -109,39 +161,6 @@
 			<button class="bg-green-700" onclick={startCall}>Start Call</button>
 		{/if}
 	</div>
-
-	<Draggable loc="bottom-left">
-		<div class="flex border-2">
-			<p class="absolute left-2 bottom-2">You</p>
-			<video
-				src=""
-				bind:this={localVideoElement}
-				playsinline
-				autoplay
-				style={`width: ${myCamWidth}px;`}
-			>
-				<track kind="captions" />
-			</video>
-		</div>
-	</Draggable>
-	<Draggable loc="bottom-right">
-		<div class="flex border-2">
-			{#if $peer}
-				<p class="absolute left-2 bottom-2">
-					{$insideCall ? $peer.username : "Call hasn't been started yet"}
-				</p>
-			{/if}
-			<video
-				src=""
-				bind:this={remoteVideoElement}
-				playsinline
-				autoplay
-				style={`width: ${peerCamWidth}px;`}
-			>
-				<track kind="captions" />
-			</video>
-		</div>
-	</Draggable>
 
 	<div class="absolute top-0 z-50">
 		{#if $insideCall}
