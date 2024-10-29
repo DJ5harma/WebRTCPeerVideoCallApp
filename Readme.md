@@ -6,6 +6,8 @@ It is right now a barebones implementation (until I complete it) as it was only 
 - Go to a specific room with a username and connect with your friend in a p2p Video call.
 - Drag and resize your and your friend's live-video.
 
+(I felt like explaining the whole theory (what I know atleast) down below cause.... why not?)
+
 # Concept behind WebRTC as I currently understand:
 
 ### In summary, we're directly connecting two client machines by exchanging their Public IP addresses to save bandwidth, power and time that would have been there due to an intermediary server.
@@ -14,7 +16,7 @@ It is right now a barebones implementation (until I complete it) as it was only 
 
 - For small sized data like text, this is practical as the client(s) and server can keep listening to each other for events, and transfer that small sized data around based on predefined logic quickly and without using much bandwidth and power as it is just text.
 
-- BUTT 🍑, to dance around with large-sized-data (like a live video-call), it takes much much more time and bandwidth. Thats why your live-youtube-videos or sports when broadcasted, have a latency in SECONDS!.
+#### BUTT 🍑, to dance around with large-sized-data (like a live video-call), it takes much much more time and bandwidth. Thats why your live-youtube-videos or sports when broadcasted, have latency in SECONDS!.
 
 - Do you really want to see your friend just staring at you for 10 seconds after you say something and then wait for it to get to them only to realise before their response that you fumbled with your words and now you're saying that again while your friend is now responding to your previous bogus?
 
@@ -62,6 +64,6 @@ I've tried to explain this as if a layman could understand. Please read again sl
 
 - Now in both the terminals: run "npm run dev".
 
-- The SvelteKit directory-path terminal will give you a URL looking similar to : "http://localhost:5173", just open that in your favorite browser (you'll need to open it in 2 tab to test p2p).
+- The SvelteKit directory-path terminal will give you a URL looking similar to : "http://localhost:5173", just open that in any browser (open it in 2 tabs of the same browser to test p2p (as your camera should not be used by other processes)).
 
 - Just go to the same room from both tabs/browsers after signing up and enjoy!!!

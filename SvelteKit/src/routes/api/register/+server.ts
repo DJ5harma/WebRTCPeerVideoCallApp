@@ -14,15 +14,14 @@ export const POST = async (req) => {
 		if (await USER.exists({ email })) throw new Error('Email already registered');
 
 		const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-		const user = new USER({
+		const user = await USER.create({
 			username,
 			hashedPassword,
 			email
 		});
 		const token = jwt.sign({ user_id: user._id }, JWT_SECRET);
 		req.cookies.set('token', token, { path: '/', maxAge: 60 * 60 * 24 * 30 }); //month
-		await user.save();
-		delete user.hashedPassword;
+		user.hashedPassword = undefined;
 		return json({ user });
 	} catch (error) {
 		return json({

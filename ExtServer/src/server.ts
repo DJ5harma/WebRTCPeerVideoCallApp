@@ -17,22 +17,17 @@ io.on("connection", (socket) => {
 
 	console.log("new connection", { clients });
 
-	socket.on("join-room", ({ name, room }) => {
-		io.to(room).emit("new-joiner", name);
+	socket.on("join-room", ({ USER, room }) => {
+		io.to(room).emit("new-joiner", USER);
 		// socket.emit("goto-room", room);
 		socket.join(room);
 
-		console.log("New joiner: ", { name, room });
+		console.log("New joiner: ", { USER, room });
 	});
-	socket.on("inform-joiner-about-me", ({ name, room }) => {
-		console.log("inform about", name);
+	socket.on("inform-joiner-about-me", ({ USER, room }) => {
+		console.log("inform about", USER);
 
-		socket.broadcast.to(room).emit("hi-from", name);
-	});
-
-	socket.on("leave-room", (room) => {
-		socket.broadcast.to(room).emit("i-left-the-room");
-		socket.leave(room);
+		socket.broadcast.to(room).emit("hi-from", USER);
 	});
 
 	socket.on("my-offerD", ({ offerD, room }) => {
