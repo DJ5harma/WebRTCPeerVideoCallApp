@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities';
 
 * {
-	border-radius: 10px;
+	border-radius: 20px;
 }
 body {
 	background-color: black;
@@ -28,7 +28,6 @@ section {
 	flex-direction: column;
 }
 button {
-	font-size: larger;
 	color: white;
 	background-color: rgb(60, 60, 200);
 	padding: 10px;

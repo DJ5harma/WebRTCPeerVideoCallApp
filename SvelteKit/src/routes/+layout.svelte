@@ -2,10 +2,13 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import '../app.css';
 	import Nav from '../components/Nav.svelte';
+	import { user } from '../states.svelte';
 	let { children } = $props();
 </script>
 
 <SvelteToast />
-<Nav />
+{#if $user}
+	<Nav />
+{/if}
 <div class="absolute"></div>
 {@render children()}
