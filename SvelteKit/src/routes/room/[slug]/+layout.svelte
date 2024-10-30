@@ -10,7 +10,7 @@
 		user
 	} from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { PC_CONFIG } from '$lib/hardcoded.js';
+	import { PC_CONFIG, PEER_POINTER_WIDTH } from '$lib/hardcoded.js';
 	import type { OUser } from '$lib/types.js';
 	import MouseEventExchanger from './MouseEventExchanger.svelte';
 	import DragContainer from './DragContainer.svelte';
@@ -95,7 +95,12 @@
 			const receiveChannel = e.channel;
 			receiveChannel.onmessage = (e) => {
 				const data = JSON.parse(e.data);
-				if (data.type.startsWith('mouse')) PeerMouseChannelData.set(data);
+				if (data.type.startsWith('mouse'))
+					PeerMouseChannelData.set({
+						...data,
+						y: Math.min(innerHeight - PEER_POINTER_WIDTH, data.y * innerHeight),
+						x: Math.min(innerWidth - PEER_POINTER_WIDTH, data.x * innerWidth)
+					});
 				else if (data.type === 'chatMessage') ChatChannelData.set(data);
 			};
 		};

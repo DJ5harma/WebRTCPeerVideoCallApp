@@ -27,7 +27,7 @@
 
 <div
 	class="rounded-full absolute overflow-hidden"
-	style={`top:${Math.min(innerHeight - PEER_POINTER_WIDTH, $PeerMouseChannelData.y * innerHeight)}px; left:${Math.min(innerWidth - PEER_POINTER_WIDTH, $PeerMouseChannelData.x * innerWidth)}px;`}
+	style={`top:${$PeerMouseChannelData.y}px; left:${$PeerMouseChannelData.x}px;`}
 >
 	<Icon
 		icon="mage:mouse-pointer-fill"
