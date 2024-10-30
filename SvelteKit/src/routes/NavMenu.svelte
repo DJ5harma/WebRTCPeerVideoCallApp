@@ -41,6 +41,7 @@
 		z-index: 50;
 	}
 	#NavMain {
+		z-index: 49;
 		position: absolute;
 		bottom: 0;
 		left: 0;

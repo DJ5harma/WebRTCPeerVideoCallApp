@@ -1,41 +1,31 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { onMount } from 'svelte';
-	import { insideCall } from '../../../states.svelte';
+	import { ChatChannelData, insideCall } from '../../../states.svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 
-	let { dataChannel, pc }: { dataChannel: RTCDataChannel; pc: RTCPeerConnection } = $props();
-	let show = $state<boolean>(true);
+	let { dataChannel }: { dataChannel: RTCDataChannel } = $props();
+	let show = $state<boolean>(false);
+
+	let myMessage: string = $state('');
+
 	let chat: {
 		fromPeer?: true;
 		message: string;
 	}[] = $state([]);
-
-	let myMessage: string = $state('');
-
+	ChatChannelData.subscribe(() => {
+		chat.push({ message: $ChatChannelData.message, fromPeer: true });
+	});
 	function sendMessage() {
 		if (!$insideCall) return toast.push('You need to be in call with someone to send a message');
+		chat.push({ message: myMessage });
+
 		dataChannel.send(
 			JSON.stringify({
 				type: 'chatMessage',
 				message: myMessage
 			})
 		);
-		chat.push({ message: myMessage });
-		myMessage = '';
 	}
-
-	onMount(() => {
-		pc.ondatachannel = (e) => {
-			const receiveChannel = e.channel;
-			receiveChannel.onmessage = (e) => {
-				const data = JSON.parse(e.data);
-				if (data.type === 'chatMessage') {
-					chat.push({ fromPeer: true, message: data.message });
-				}
-			};
-		};
-	});
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->

@@ -8,3 +8,12 @@ export interface OUser {
 export interface IUser extends OUser {
 	friends: OUser[];
 }
+export interface IChatMessage {
+	fromPeer?: true;
+	message: string;
+}
+export interface IPeerMouse {
+	type: 'mousemove' | 'mouseup' | 'mousedown';
+	x: number;
+	y: number;
+}

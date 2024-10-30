@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { insideCall, peer, room, socket, user } from '../../../states.svelte.js';
+	import {
+		ChatChannelData,
+		insideCall,
+		peer,
+		PeerMouseChannelData,
+		room,
+		socket,
+		user
+	} from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { PC_CONFIG } from '$lib/hardcoded.js';
 	import type { OUser } from '$lib/types.js';
@@ -83,6 +91,14 @@
 			}
 			toast.push(st);
 		};
+		pc.ondatachannel = (e) => {
+			const receiveChannel = e.channel;
+			receiveChannel.onmessage = (e) => {
+				const data = JSON.parse(e.data);
+				if (data.type.startsWith('mouse')) PeerMouseChannelData.set(data);
+				else if (data.type === 'chatMessage') ChatChannelData.set(data);
+			};
+		};
 
 		socket.on('incoming-offerD', async (offerD) => {
 			await pc?.setRemoteDescription(offerD);
@@ -96,7 +112,6 @@
 			async (iceCandidate) => await pc?.addIceCandidate(iceCandidate)
 		);
 		return () => {
-			insideCall.set(false);
 			pc?.close();
 			socket.removeAllListeners();
 			toast.push('Left the room' + ($peer ? ` with ${$peer.username}` : ''));
@@ -110,8 +125,8 @@
 </script>
 
 {#if dataChannel && pc}
-	<!-- <MouseEventExchanger {dataChannel} {pc} /> -->
-	<ChatBox {dataChannel} {pc} />
+	<MouseEventExchanger {dataChannel} />
+	<ChatBox {dataChannel} />
 {/if}
 <DragContainer loc="bottom-left">
 	<div class="flex border-2">
@@ -150,10 +165,10 @@
 	<div>
 		{@render children()}
 		<p class="text-2xl">{($peer ? $peer.username : 'Nobody else') + ' is here'}</p>
-		{#if $peer && !$insideCall}
-			<button class="bg-green-700" onclick={startCall}>Start Call</button>
-		{/if}
 	</div>
+	{#if $peer && !$insideCall}
+		<button class="bg-green-700" onclick={startCall}>Start Call</button>
+	{/if}
 
 	<div class="absolute top-0 z-50">
 		{#if $insideCall}
