@@ -14,3 +14,4 @@ export const PC_CONFIG = {
 		}
 	]
 };
+export const PEER_POINTER_WIDTH = 30;

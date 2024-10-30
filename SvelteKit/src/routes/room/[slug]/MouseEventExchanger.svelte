@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { insideCall, PeerMouseChannelData } from '../../../states.svelte';
 	import Icon from '@iconify/svelte';
+	import { PEER_POINTER_WIDTH } from '$lib/hardcoded';
 
 	let { dataChannel }: { dataChannel: RTCDataChannel } = $props();
 
@@ -10,8 +11,8 @@
 		dataChannel.send(
 			JSON.stringify({
 				type: 'mousemove',
-				x: event.clientX,
-				y: event.clientY
+				x: event.clientX / innerWidth,
+				y: event.clientY / innerHeight
 			})
 		);
 	};
@@ -25,8 +26,13 @@
 </script>
 
 <div
-	class="rounded-full absolute"
-	style={`top:${$PeerMouseChannelData.y}px; left:${$PeerMouseChannelData.x}px;`}
+	class="rounded-full absolute overflow-hidden"
+	style={`top:${Math.min(innerHeight - PEER_POINTER_WIDTH, $PeerMouseChannelData.y * innerHeight)}px; left:${Math.min(innerWidth - PEER_POINTER_WIDTH, $PeerMouseChannelData.x * innerWidth)}px;`}
 >
-	<Icon icon="mage:mouse-pointer-fill" width="30" style="color:yellow;" class="z-50" />
+	<Icon
+		icon="mage:mouse-pointer-fill"
+		width={`${PEER_POINTER_WIDTH}px`}
+		style="color:yellow;"
+		class="z-50"
+	/>
 </div>
