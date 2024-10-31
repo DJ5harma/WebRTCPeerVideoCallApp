@@ -12,8 +12,8 @@
 		fromPeer?: true;
 		message: string;
 	}[] = $state([]);
-	ChatChannelData.subscribe(() => {
-		chat.push({ message: $ChatChannelData.message, fromPeer: true });
+	ChatChannelData.subscribe((val) => {
+		chat.push({ message: val.message, fromPeer: true });
 	});
 	function sendMessage() {
 		if (!$insideCall) return toast.push('You need to be in call with someone to send a message');
@@ -73,7 +73,7 @@
 		border: solid;
 		padding: 10px;
 		cursor: pointer;
-		z-index: 50;
+		z-index: 1;
 	}
 	#ChatBoxMain {
 		position: absolute;

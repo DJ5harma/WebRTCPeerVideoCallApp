@@ -8,5 +8,5 @@ export async function load(ev) {
 		}
 	});
 	const result = await response.json();
-	user.update(() => result.user);
+	user.set(result.user);
 }

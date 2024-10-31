@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { user } from '../states.svelte';
 	let ROOM = $state('1234');
 </script>
@@ -12,5 +11,7 @@
 		<p>Room :</p>
 		<input bind:value={ROOM} />
 	</div>
-	<button onclick={() => goto('/room/' + ROOM)}>Join</button>
+	<a href={'/room/' + ROOM}>
+		<button> Join </button>
+	</a>
 </section>

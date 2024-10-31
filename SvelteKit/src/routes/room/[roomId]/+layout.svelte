@@ -97,7 +97,7 @@
 				const data = JSON.parse(e.data);
 				if (data.type.startsWith('mouse'))
 					PeerMouseChannelData.set({
-						...data,
+						type: data.type,
 						y: Math.min(innerHeight - PEER_POINTER_WIDTH, data.y * innerHeight),
 						x: Math.min(innerWidth - PEER_POINTER_WIDTH, data.x * innerWidth)
 					});
@@ -166,21 +166,19 @@
 	</div>
 </DragContainer>
 
-<section class="overflow-hidden">
-	<div>
-		{@render children()}
-		<p class="text-2xl">{($peer ? $peer.username : 'Nobody else') + ' is here'}</p>
-	</div>
+<section>
 	{#if $peer && !$insideCall}
 		<button class="bg-green-700" onclick={startCall}>Start Call</button>
 	{/if}
 
-	<div class="absolute top-0 z-50">
-		{#if $insideCall}
+	{#if $insideCall}
+		<div class="absolute top-0 z-50">
 			<a href="/"> <button class="bg-red-700"> EndCall </button> </a>
-		{/if}
-	</div>
+		</div>
+		{@render children()}
+	{/if}
 	<div class="absolute bottom-0 z-50 flex-col">
+		<p class="text-2xl">{($peer ? $peer.username : 'Nobody') + ' :Peer'}</p>
 		<p>Video sizes</p>
 		<div class="flex-col gap-0">
 			<div>

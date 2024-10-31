@@ -16,4 +16,5 @@ export interface IPeerMouse {
 	type: 'mousemove' | 'mouseup' | 'mousedown';
 	x: number;
 	y: number;
+	button?: number;
 }
