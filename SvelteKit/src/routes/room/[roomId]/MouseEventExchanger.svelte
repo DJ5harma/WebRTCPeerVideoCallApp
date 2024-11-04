@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { insideCall, PeerMouseChannelData } from '../../../states.svelte';
+	import { insideCall } from '../../../states.svelte';
 	import Icon from '@iconify/svelte';
 	import { PEER_POINTER_WIDTH } from '$lib/hardcoded';
-
-	let { dataChannel }: { dataChannel: RTCDataChannel } = $props();
+	import { dataChannel, PeerMouseDC } from './dataChannelStates';
 
 	const simulateClick = (x: number, y: number) => {
 		const event = new MouseEvent('click', {
@@ -19,13 +18,13 @@
 		if (element) element.dispatchEvent(event);
 	};
 
-	PeerMouseChannelData.subscribe((val) => {
+	PeerMouseDC.subscribe((val) => {
 		if (val.type === 'mousedown') simulateClick(val.x, val.y);
 	});
 
 	const mouseMoveHandler = (event: MouseEvent) => {
 		if (!$insideCall) return;
-		dataChannel.send(
+		$dataChannel.send(
 			JSON.stringify({
 				type: 'mousemove',
 				x: event.clientX / innerWidth,
@@ -35,7 +34,7 @@
 	};
 	const mouseDownHandler = (event: MouseEvent) => {
 		if (!$insideCall) return;
-		dataChannel.send(
+		$dataChannel.send(
 			JSON.stringify({
 				type: 'mousedown',
 				x: event.clientX / innerWidth,
@@ -46,7 +45,7 @@
 	};
 	const mouseUpHandler = (event: MouseEvent) => {
 		if (!$insideCall) return;
-		dataChannel.send(
+		$dataChannel.send(
 			JSON.stringify({
 				type: 'mouseup',
 				x: event.clientX / innerWidth,
@@ -70,7 +69,7 @@
 
 <div
 	class="rounded-full absolute overflow-hidden"
-	style={`top:${$PeerMouseChannelData.y}px; left:${$PeerMouseChannelData.x}px;`}
+	style={`top:${$PeerMouseDC.y}px; left:${$PeerMouseDC.x}px;`}
 >
 	<Icon
 		icon="mage:mouse-pointer-fill"

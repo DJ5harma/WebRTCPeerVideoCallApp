@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { SOCKET_URL } from '$lib/hardcoded';
-import type { IChatMessage, IPeerMouse, IUser, OUser } from '$lib/types';
+import type { IUser, OUser } from '$lib/types';
 import { io } from 'socket.io-client';
 import { writable } from 'svelte/store';
 
@@ -11,21 +11,3 @@ export const user = writable<IUser>();
 export const room = writable('');
 
 export const insideCall = writable(false);
-
-export const videoStarted = writable(false);
-
-export const myCamDimensions = writable({
-	width: 300,
-	height: 230
-});
-export const peerCamDimensions = writable({
-	width: 300,
-	height: 230
-});
-
-export const ChatChannelData = writable<IChatMessage>({ message: '' });
-export const PeerMouseChannelData = writable<IPeerMouse>({
-	type: 'mousemove',
-	x: 0,
-	y: 0
-});

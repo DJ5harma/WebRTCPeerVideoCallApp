@@ -1,26 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		ChatChannelData,
-		insideCall,
-		peer,
-		PeerMouseChannelData,
-		room,
-		socket,
-		user
-	} from '../../../states.svelte.js';
+	import { insideCall, peer, room, socket, user } from '../../../states.svelte.js';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { PC_CONFIG, PEER_POINTER_WIDTH } from '$lib/hardcoded.js';
 	import type { OUser } from '$lib/types.js';
-	import MouseEventExchanger from './MouseEventExchanger.svelte';
-	import DragContainer from './DragContainer.svelte';
+	import DragContainer from '../../../components/DragContainer.svelte';
+	import { ChatDC, dataChannel, PeerMouseDC } from './dataChannelStates.js';
 	import ChatBox from './ChatBox.svelte';
 
 	let localStream: MediaStream;
 	let localVideoElement: HTMLVideoElement;
 	let remoteVideoElement = $state<HTMLVideoElement>();
-
-	let dataChannel = $state<RTCDataChannel>();
 
 	let pc = $state<RTCPeerConnection>();
 
@@ -44,7 +34,7 @@
 
 	const createPeerConnection = async () => {
 		!pc && (pc = new RTCPeerConnection(PC_CONFIG));
-		dataChannel = pc.createDataChannel('messageChannel');
+		$dataChannel = pc.createDataChannel('messageChannel');
 	};
 
 	const startMyVideo = async () => {
@@ -66,7 +56,7 @@
 			.createOffer()
 			.then((offer) => pc?.setLocalDescription(offer))
 			.then(() => socket.emit('my-offerD', { offerD: pc?.localDescription, room: $room }))
-			.then(() => toast.pop('Call started'))
+			.then(() => toast.push('Call started'))
 			.then(() => toast.push('Tip: you can drag videos'));
 
 	onMount(() => {
@@ -96,12 +86,12 @@
 			receiveChannel.onmessage = (e) => {
 				const data = JSON.parse(e.data);
 				if (data.type.startsWith('mouse'))
-					PeerMouseChannelData.set({
+					PeerMouseDC.set({
 						type: data.type,
 						y: Math.min(innerHeight - PEER_POINTER_WIDTH, data.y * innerHeight),
 						x: Math.min(innerWidth - PEER_POINTER_WIDTH, data.x * innerWidth)
 					});
-				else if (data.type === 'chatMessage') ChatChannelData.set(data);
+				else if (data.type === 'chatMessage') ChatDC.set(data);
 			};
 		};
 
@@ -111,27 +101,25 @@
 			await pc?.setLocalDescription(answer);
 			socket.emit('my-answerD', { answerD: pc?.localDescription, room: $room });
 		});
-		socket.on('incoming-answerD', async (answerD) => await pc?.setRemoteDescription(answerD));
-		socket.on(
-			'incoming-ice-candidate',
-			async (iceCandidate) => await pc?.addIceCandidate(iceCandidate)
-		);
+		socket.on('incoming-answerD', (answerD) => pc?.setRemoteDescription(answerD));
+		socket.on('incoming-ice-candidate', (iceCandidate) => pc?.addIceCandidate(iceCandidate));
 		return () => {
 			pc?.close();
 			socket.removeAllListeners();
+			// socket.disconnect();
 			toast.push('Left the room' + ($peer ? ` with ${$peer.username}` : ''));
 		};
 	});
 
 	let { children } = $props();
 
-	let myCamWidth = $state(250);
-	let peerCamWidth = $state(250);
+	let myCamWidth = $state(200);
+	let peerCamWidth = $state(200);
 </script>
 
-{#if dataChannel && pc}
-	<MouseEventExchanger {dataChannel} />
-	<ChatBox {dataChannel} />
+{#if $dataChannel && pc}
+	<!-- <MouseEventExchanger /> -->
+	<ChatBox />
 {/if}
 <DragContainer loc="bottom-left">
 	<div class="flex border-2">
@@ -166,19 +154,21 @@
 	</div>
 </DragContainer>
 
+{#if $insideCall}
+	<div class="absolute top-0 z-50">
+		<a href="/"> <button class="bg-red-700"> EndCall with ${$peer?.username}</button> </a>
+	</div>
+	<section class="w-full h-full [&>section]:w-full [&>section]:h-full">
+		{@render children()}
+	</section>
+{/if}
+
 <section>
 	{#if $peer && !$insideCall}
 		<button class="bg-green-700" onclick={startCall}>Start Call</button>
 	{/if}
 
-	{#if $insideCall}
-		<div class="absolute top-0 z-50">
-			<a href="/"> <button class="bg-red-700"> EndCall </button> </a>
-		</div>
-		{@render children()}
-	{/if}
-	<div class="absolute bottom-0 z-50 flex-col">
-		<p class="text-2xl">{($peer ? $peer.username : 'Nobody') + ' :Peer'}</p>
+	<div class="absolute left-0 top-24 z-50 flex-col gap-0">
 		<p>Video sizes</p>
 		<div class="flex-col gap-0">
 			<div>

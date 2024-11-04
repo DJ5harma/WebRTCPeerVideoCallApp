@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { ChatChannelData, insideCall } from '../../../states.svelte';
+	import { insideCall } from '../../../states.svelte';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { ChatDC, dataChannel } from './dataChannelStates';
 
-	let { dataChannel }: { dataChannel: RTCDataChannel } = $props();
 	let show = $state<boolean>(false);
 
 	let myMessage: string = $state('');
@@ -12,14 +12,14 @@
 		fromPeer?: true;
 		message: string;
 	}[] = $state([]);
-	ChatChannelData.subscribe((val) => {
-		chat.push({ message: val.message, fromPeer: true });
+	ChatDC.subscribe((val) => {
+		if (val.message) chat.push({ message: val.message, fromPeer: true });
 	});
 	function sendMessage() {
 		if (!$insideCall) return toast.push('You need to be in call with someone to send a message');
-		chat.push({ message: myMessage });
+		if (myMessage) chat.push({ message: myMessage });
 
-		dataChannel.send(
+		$dataChannel.send(
 			JSON.stringify({
 				type: 'chatMessage',
 				message: myMessage
@@ -35,17 +35,19 @@
 </div>
 <div id="ChatBoxMain" class={show ? 'fadeIn' : 'fadeOut'}>
 	<div class="w-full pr-4 font-bold p-2">Chat</div>
-	<div class="flex-grow flex-col gap-1 justify-start w-full overflow-y-auto">
+	<div
+		class="flex-grow flex-col gap-1 justify-start w-full overflow-y-auto overflow-x-hidden break-words"
+	>
 		{#each chat as obj}
 			{#if obj.fromPeer}
 				<section class="w-full flex-row justify-start p-0">
-					<p class="bg-white text-black p-4 rounded-l-none">
+					<p class="bg-white text-black p-4 rounded-l-none max-w-full w-fit">
 						{obj.message}
 					</p>
 				</section>
 			{:else}
 				<section class="w-full flex-row justify-end p-0">
-					<p class="bg-black text-white p-4 rounded-r-none">
+					<p class="bg-black text-white p-4 rounded-r-none max-w-full w-fit">
 						{obj.message}
 					</p>
 				</section>
@@ -80,7 +82,7 @@
 		bottom: 0;
 		right: 0;
 		height: 100vh;
-		width: 330px;
+		width: 400px;
 		flex-direction: column;
 		gap: 10px;
 		border-top-right-radius: 0;
